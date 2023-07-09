@@ -392,8 +392,11 @@ const Home = ({
       }}
     >
       <Head>
-        <title>Chatbot UI</title>
-        <meta name="description" content="ChatGPT but better." />
+        <title>OmniChat</title>
+        <meta
+          name="description"
+          content="Your Passport to Information Exploration."
+        />
         <meta
           name="viewport"
           content="height=device-height ,width=device-width, initial-scale=1, user-scalable=no"
