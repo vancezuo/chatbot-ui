@@ -51,7 +51,7 @@ export const ChatbarSettings = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center space-y-1 border-t border-white/20 pt-1 text-sm">
+    <div className="flex flex-col items-center space-y-1 border-t border-white/20 pt-0 text-sm">
       <div className="flex justify-start w-full ml-6">
         <a
           className="dbox-donation-button"

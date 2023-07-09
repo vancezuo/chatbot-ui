@@ -18,10 +18,10 @@ const handler = async (req: Request): Promise<Response> => {
     const { model, messages, key, prompt, temperature } =
       (await req.json()) as ChatBody;
 
-    // // Add this block to reject GPT-4
-    // if (model.id === 'gpt-4') {
-    //   throw new Error('GPT-4 model is not supported at this time.');
-    // }
+    // Add this block to reject GPT-4
+    if (model.id === 'gpt-4') {
+      throw new Error('GPT-4 model is not supported at this time.');
+    }
 
     await init((imports) => WebAssembly.instantiate(wasm, imports));
     const encoding = new Tiktoken(

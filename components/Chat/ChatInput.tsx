@@ -415,9 +415,14 @@ export const ChatInput = ({
         </div>
       </div>
       <div className="px-3 pt-2 pb-3 text-center text-[12px] text-black/50 dark:text-white/50 md:px-4 md:pt-3 md:pb-6">
-        {t(
-          'OmniChat: Your gateway to simplifying data access and supercharging your knowledge exploration journey.',
-        )}
+        <p>
+          {t(
+            'OmniChat: Your gateway to simplifying data access and supercharging your knowledge exploration journey.',
+          )}
+        </p>
+        <p>
+          Reach out to us at <u>answers@omnichat.org</u>
+        </p>
       </div>
     </div>
   );
