@@ -432,11 +432,10 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                     )}
                   </div>
 
-                  <div className="px-4 text-center text-[12px] text-black/50 dark:text-white/50 md:px-8">
+                  <div className="px-4 text-center text-[12px] text-black/50 dark:text-white/50 md:px-6">
                     <p>
-                      OmniChat is proudly built upon the open-source project,
-                      Chatbot UI. We extend our gratitude to the original
-                      developers. You can explore their work on{' '}
+                      Powered by open-source Chatbot UI, OmniChat appreciates
+                      its creators. Explore on{' '}
                       <a href="https://github.com/mckaywrigley/chatbot-ui">
                         <u>GitHub</u>
                       </a>
