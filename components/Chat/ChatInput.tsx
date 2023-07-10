@@ -271,7 +271,7 @@ export const ChatInput = ({
       <div className="stretch mx-2 mt-4 flex flex-row gap-3 last:mb-2 md:mx-4 md:mt-[52px] md:last:mb-6 lg:mx-auto lg:max-w-3xl">
         {messageIsStreaming && (
           <button
-            className="absolute top-0 left-0 right-0 mx-auto mb-3 -mt-3 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+            className="absolute top-0 left-0 right-0 mx-auto mb-3 -mt-2 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
             onClick={handleStopConversation}
           >
             <IconPlayerStop size={16} /> {t('Stop Generating')}
@@ -282,7 +282,7 @@ export const ChatInput = ({
           selectedConversation &&
           selectedConversation.messages.length > 0 && (
             <button
-              className="absolute top-0 left-0 right-0 mx-auto mb-3 -mt-3 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+              className="absolute top-0 left-0 right-0 mx-auto mb-3 -mt-2 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
               onClick={() => onRegenerate(selectedPlugin)}
             >
               <IconRepeat size={16} /> {t('Regenerate response')}
@@ -416,8 +416,10 @@ export const ChatInput = ({
       </div>
       <div className="px-3 pt-2 pb-3 text-center text-[12px] text-black/50 dark:text-white/50 md:px-4 md:pt-3 md:pb-6">
         <p>
-          {t('OmniChat: Your Passport to Information Exploration.')} Reach out
-          to us at <u>answers@omnichat.org</u>
+          {t(
+            'OmniChat: Your Passport to Information Exploration. Reach out to us at',
+          )}{' '}
+          <u>answers@omnichat.org</u>
         </p>
       </div>
     </div>
