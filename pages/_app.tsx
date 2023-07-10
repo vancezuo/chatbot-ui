@@ -1,3 +1,4 @@
+import TagManager from 'react-gtm-module';
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
@@ -9,8 +10,14 @@ import '@/styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
+const tagManagerArgs = {
+  gtmId: 'G-GJQBG1DD14',
+};
+
 function App({ Component, pageProps }: AppProps<{}>) {
   const queryClient = new QueryClient();
+
+  TagManager.initialize(tagManagerArgs);
 
   return (
     <div className={inter.className}>
