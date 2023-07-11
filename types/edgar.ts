@@ -14,3 +14,5 @@ export interface EdgarParams {
 export interface EdgarBody extends ChatBody {
   edgarParams: EdgarParams;
 }
+
+export type Symbol = { value: string; label: string };

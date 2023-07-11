@@ -7,6 +7,7 @@ import Datepicker from 'tailwind-datepicker-react';
 import Image from 'next/image';
 
 import { KeyValuePair } from '@/types/data';
+import { Symbol } from '@/types/edgar';
 import { Plugin, PluginID, Plugins } from '@/types/plugin';
 
 import HomeContext from '@/pages/api/home/home.context';
@@ -26,11 +27,22 @@ interface Option {
   label: string;
 }
 
-const symbols = [
-  { value: 'AAPL', label: 'Apple Inc.' },
-  { value: 'GOOG', label: 'Google Inc.' },
-  { value: 'TSLA', label: 'Tesla, Inc.' },
-];
+async function readCSVFile(filePath: string): Promise<Symbol[]> {
+  const response = await fetch(filePath);
+  const csvData = await response.text();
+
+  // split the csvData by newline to get an array of lines
+  const lines = csvData.split('\r\n');
+
+  // for each line, split by comma to get the value and label,
+  // and create a Symbol object
+  const symbols: Symbol[] = lines.map((line) => {
+    const [value, label] = line.split(',');
+    return { value, label };
+  });
+
+  return symbols;
+}
 
 const formTypes = [
   { value: '10-K', label: 'Annual Report' },
@@ -62,6 +74,8 @@ const EdgarParams: React.FC<EdgarParamsProps> = memo(({ onBack, onSave }) => {
     const dayStr = (day < 10 ? '0' + day : day) as string;
     return parseInt(`${year}${monthStr}${dayStr}`);
   };
+
+  const [symbols, setSymbols] = useState<Symbol[]>([]); // changed the default value to null
 
   const [selectedSymbols, setSelectedSymbols] = useState<MultiValue<Option>>(
     [],
@@ -158,7 +172,18 @@ const EdgarParams: React.FC<EdgarParamsProps> = memo(({ onBack, onSave }) => {
         })),
       );
     }
-  }, [edgarPluginKeys]);
+  }, [edgarPluginKeys, symbols]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await readCSVFile('/symbols.csv');
+        setSymbols(result);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
 
   return (
     <div className="p-6 rounded-lg shadow-lg">
