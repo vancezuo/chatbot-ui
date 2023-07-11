@@ -32,7 +32,7 @@ async function readCSVFile(filePath: string): Promise<Symbol[]> {
   const csvData = await response.text();
 
   // split the csvData by newline to get an array of lines
-  const lines = csvData.split('\r\n');
+  const lines = csvData.split(/\r?\n/);
 
   // for each line, split by comma to get the value and label,
   // and create a Symbol object
@@ -154,12 +154,16 @@ const EdgarParams: React.FC<EdgarParamsProps> = memo(({ onBack, onSave }) => {
       (key) => key.key === 'symbols',
     )?.value;
     if (symbolKeys && symbolKeys.length !== symbols.length) {
+      console.log(symbolKeys.length);
+      console.log(symbols.length);
       setSelectedSymbols(
         symbolKeys.map((symbol: string) => ({
           value: symbol,
           label: symbols.find((s) => s.value === symbol)?.label,
         })),
       );
+    } else {
+      setSelectedSymbols([]);
     }
     const formTypeKeys = edgarPluginKeys?.find(
       (key) => key.key === 'formTypes',
