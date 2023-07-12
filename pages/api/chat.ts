@@ -19,7 +19,7 @@ const handler = async (req: Request): Promise<Response> => {
       (await req.json()) as ChatBody;
 
     // Add this block to reject GPT-4
-    if (model.id === 'gpt-4') {
+    if (process.env.GPT4_ENABLED === 'false' && model.id === 'gpt-4') {
       throw new Error('GPT-4 model is not supported at this time.');
     }
 

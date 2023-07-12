@@ -16,7 +16,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
       req.body as GoogleBody;
 
     // Add this block to reject GPT-4
-    if (model.id === 'gpt-4') {
+    if (!process.env.GPT4_ENABLED && model.id === 'gpt-4') {
       throw new Error('GPT-4 model is not supported at this time.');
     }
 
