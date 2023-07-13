@@ -45,9 +45,9 @@ async function readCSVFile(filePath: string): Promise<Symbol[]> {
 }
 
 const formTypes = [
+  { value: '8-K', label: 'Current Report' },
   { value: '10-K', label: 'Annual Report' },
   { value: '10-Q', label: 'Quarterly Report' },
-  { value: '8-K', label: 'Current Report' },
 ];
 
 const EdgarParams: React.FC<EdgarParamsProps> = memo(({ onBack, onSave }) => {
@@ -178,6 +178,7 @@ const EdgarParams: React.FC<EdgarParamsProps> = memo(({ onBack, onSave }) => {
     (async () => {
       try {
         const result = await readCSVFile('/symbols.csv');
+        result.sort((a, b) => a.label.localeCompare(b.label));
         setSymbols(result);
       } catch (err) {
         console.error(err);
