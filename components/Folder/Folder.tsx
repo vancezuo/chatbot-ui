@@ -59,7 +59,7 @@ const Folder = ({
 
       handleDrop(e, currentFolder);
 
-      e.target.style.background = '';
+      e.target.style.background = 'none';
     }
   };
 
@@ -72,7 +72,7 @@ const Folder = ({
   };
 
   const removeHighlight = (e: any) => {
-    e.target.style.background = '';
+    e.target.style.background = 'none';
   };
 
   useEffect(() => {

@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 
-import { Conversation } from '@/types/chat';
 import { FolderInterface } from '@/types/folder';
 
 import HomeContext from '@/pages/api/home/home.context';
@@ -11,12 +10,11 @@ import { ConversationComponent } from './Conversation';
 
 interface Props {
   searchTerm: string;
-  filteredConversations: Conversation[];
 }
 
-export const ChatFolders = ({ searchTerm, filteredConversations }: Props) => {
+export const ChatFolders = ({ searchTerm }: Props) => {
   const {
-    state: { folders },
+    state: { folders, conversations },
     handleUpdateConversation,
   } = useContext(HomeContext);
 
@@ -32,8 +30,8 @@ export const ChatFolders = ({ searchTerm, filteredConversations }: Props) => {
 
   const ChatFolders = (currentFolder: FolderInterface) => {
     return (
-      filteredConversations &&
-      filteredConversations
+      conversations &&
+      conversations
         .filter((conversation) => conversation.folderId)
         .map((conversation, index) => {
           if (conversation.folderId === currentFolder.id) {

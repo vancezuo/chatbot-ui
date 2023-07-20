@@ -9,9 +9,5 @@ export const getEndpoint = (plugin: Plugin | null) => {
     return 'api/google';
   }
 
-  if (plugin.id === PluginID.EDGAR) {
-    return 'api/edgar';
-  }
-
   return 'api/chat';
 };

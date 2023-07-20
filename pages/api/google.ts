@@ -15,11 +15,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     const { messages, key, model, googleAPIKey, googleCSEId } =
       req.body as GoogleBody;
 
-    // Add this block to reject GPT-4
-    if (!process.env.GPT4_ENABLED && model.id === 'gpt-4') {
-      throw new Error('GPT-4 model is not supported at this time.');
-    }
-
     const userMessage = messages[messages.length - 1];
     const query = encodeURIComponent(userMessage.content.trim());
 
@@ -147,7 +142,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
     res.status(200).json({ answer });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error' });
+    res.status(500).json({ error: 'Error'})
   }
 };
 

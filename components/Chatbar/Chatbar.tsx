@@ -182,7 +182,7 @@ export const Chatbar = () => {
       const conversation = JSON.parse(e.dataTransfer.getData('conversation'));
       handleUpdateConversation(conversation, { key: 'folderId', value: 0 });
       chatDispatch({ field: 'searchTerm', value: '' });
-      e.target.style.background = '';
+      e.target.style.background = 'none';
     }
   };
 
@@ -224,12 +224,7 @@ export const Chatbar = () => {
         isOpen={showChatbar}
         addItemButtonTitle={t('New chat')}
         itemComponent={<Conversations conversations={filteredConversations} />}
-        folderComponent={
-          <ChatFolders
-            searchTerm={searchTerm}
-            filteredConversations={filteredConversations}
-          />
-        }
+        folderComponent={<ChatFolders searchTerm={searchTerm} />}
         items={filteredConversations}
         searchTerm={searchTerm}
         handleSearchTerm={(searchTerm: string) =>

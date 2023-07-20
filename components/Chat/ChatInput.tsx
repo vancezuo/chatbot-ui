@@ -15,26 +15,22 @@ import {
   useRef,
   useState,
 } from 'react';
-import { IoBusinessOutline } from 'react-icons/io5';
-import { SiOpenai } from 'react-icons/si';
 
 import { useTranslation } from 'next-i18next';
-import Image from 'next/image';
 
 import { Message } from '@/types/chat';
-import { Plugin, PluginID } from '@/types/plugin';
+import { Plugin } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
 
 import HomeContext from '@/pages/api/home/home.context';
 
-import { PluginPicker } from './PluginPicker';
-// import { PluginSelect } from './PluginSelect';
+import { PluginSelect } from './PluginSelect';
 import { PromptList } from './PromptList';
 import { VariableModal } from './VariableModal';
 
 interface Props {
   onSend: (message: Message, plugin: Plugin | null) => void;
-  onRegenerate: (plugin: Plugin | null) => void;
+  onRegenerate: () => void;
   onScrollDownClick: () => void;
   stopConversationRef: MutableRefObject<boolean>;
   textareaRef: MutableRefObject<HTMLTextAreaElement | null>;
@@ -52,13 +48,8 @@ export const ChatInput = ({
   const { t } = useTranslation('chat');
 
   const {
-    state: {
-      selectedPlugin,
-      selectedConversation,
-      messageIsStreaming,
-      prompts,
-    },
-    handleSelectPlugin,
+    state: { selectedConversation, messageIsStreaming, prompts },
+
     dispatch: homeDispatch,
   } = useContext(HomeContext);
 
@@ -70,8 +61,7 @@ export const ChatInput = ({
   const [variables, setVariables] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showPluginSelect, setShowPluginSelect] = useState(false);
-  const [showPluginPicker, setShowPluginPicker] = useState(false);
-  // const [plugin, setPlugin] = useState<Plugin | null>(null);
+  const [plugin, setPlugin] = useState<Plugin | null>(null);
 
   const promptListRef = useRef<HTMLUListElement | null>(null);
 
@@ -107,9 +97,9 @@ export const ChatInput = ({
       return;
     }
 
-    onSend({ role: 'user', content }, selectedPlugin);
+    onSend({ role: 'user', content }, plugin);
     setContent('');
-    //setPlugin(null);
+    setPlugin(null);
 
     if (window.innerWidth < 640 && textareaRef && textareaRef.current) {
       textareaRef.current.blur();
@@ -271,7 +261,7 @@ export const ChatInput = ({
       <div className="stretch mx-2 mt-4 flex flex-row gap-3 last:mb-2 md:mx-4 md:mt-[52px] md:last:mb-6 lg:mx-auto lg:max-w-3xl">
         {messageIsStreaming && (
           <button
-            className="absolute top-0 left-0 right-0 mx-auto mb-3 -mt-2 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+            className="absolute top-0 left-0 right-0 mx-auto mb-3 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
             onClick={handleStopConversation}
           >
             <IconPlayerStop size={16} /> {t('Stop Generating')}
@@ -282,8 +272,8 @@ export const ChatInput = ({
           selectedConversation &&
           selectedConversation.messages.length > 0 && (
             <button
-              className="absolute top-0 left-0 right-0 mx-auto mb-3 -mt-2 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
-              onClick={() => onRegenerate(selectedPlugin)}
+              className="absolute top-0 left-0 right-0 mx-auto mb-3 flex w-fit items-center gap-3 rounded border border-neutral-200 bg-white py-2 px-4 text-black hover:opacity-50 dark:border-neutral-600 dark:bg-[#343541] dark:text-white md:mb-0 md:mt-2"
+              onClick={onRegenerate}
             >
               <IconRepeat size={16} /> {t('Regenerate response')}
             </button>
@@ -292,38 +282,13 @@ export const ChatInput = ({
         <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
           <button
             className="absolute left-2 top-2 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
-            onClick={() => setShowPluginPicker(!showPluginSelect)}
+            onClick={() => setShowPluginSelect(!showPluginSelect)}
             onKeyDown={(e) => {}}
           >
-            {selectedPlugin && selectedPlugin.id === PluginID.GOOGLE_SEARCH ? (
-              <IconBrandGoogle size={20} />
-            ) : selectedPlugin && selectedPlugin.id === PluginID.EDGAR ? (
-              <Image
-                src="/edgarchaticon.svg"
-                alt="EDGAR"
-                width={20}
-                height={20}
-              />
-            ) : (
-              <SiOpenai size={20} />
-            )}
+            {plugin ? <IconBrandGoogle size={20} /> : <IconBolt size={20} />}
           </button>
 
-          {showPluginPicker && (
-            <PluginPicker
-              onPluginChange={(selectedPlugin: Plugin | null) => {
-                handleSelectPlugin(selectedPlugin);
-                setShowPluginPicker(false);
-
-                if (textareaRef && textareaRef.current) {
-                  textareaRef.current.focus();
-                }
-              }}
-              onClose={() => setShowPluginPicker(false)}
-            />
-          )}
-
-          {/* {showPluginSelect && (
+          {showPluginSelect && (
             <div className="absolute left-0 bottom-14 rounded bg-white dark:bg-[#343541]">
               <PluginSelect
                 plugin={plugin}
@@ -344,7 +309,7 @@ export const ChatInput = ({
                 }}
               />
             </div>
-          )} */}
+          )}
 
           <textarea
             ref={textareaRef}
@@ -382,7 +347,7 @@ export const ChatInput = ({
           </button>
 
           {showScrollDownButton && (
-            <div className="absolute -top-10 right-1 lg:top-2 lg:-right-11">
+            <div className="absolute bottom-12 right-0 lg:bottom-0 lg:-right-10">
               <button
                 className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-300 text-gray-800 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-neutral-200"
                 onClick={onScrollDownClick}
@@ -415,12 +380,18 @@ export const ChatInput = ({
         </div>
       </div>
       <div className="px-3 pt-2 pb-3 text-center text-[12px] text-black/50 dark:text-white/50 md:px-4 md:pt-3 md:pb-6">
-        <p>
-          {t(
-            'OmniChat: Your Passport to Information Exploration. Reach out to us at',
-          )}{' '}
-          <u>answers@omnichat.org</u>
-        </p>
+        <a
+          href="https://github.com/mckaywrigley/chatbot-ui"
+          target="_blank"
+          rel="noreferrer"
+          className="underline"
+        >
+          ChatBot UI
+        </a>
+        .{' '}
+        {t(
+          "Chatbot UI is an advanced chatbot kit for OpenAI's chat models aiming to mimic ChatGPT's interface and functionality.",
+        )}
       </div>
     </div>
   );

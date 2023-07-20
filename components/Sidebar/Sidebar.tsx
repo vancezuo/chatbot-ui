@@ -51,7 +51,7 @@ const Sidebar = <T,>({
   };
 
   const removeHighlight = (e: any) => {
-    e.target.style.background = '';
+    e.target.style.background = 'none';
   };
 
   return isOpen ? (

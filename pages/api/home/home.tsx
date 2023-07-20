@@ -22,7 +22,6 @@ import {
   updateConversation,
 } from '@/utils/app/conversation';
 import { saveFolders } from '@/utils/app/folders';
-import { savePlugin } from '@/utils/app/plugin';
 import { savePrompts } from '@/utils/app/prompts';
 import { getSettings } from '@/utils/app/settings';
 
@@ -30,7 +29,6 @@ import { Conversation } from '@/types/chat';
 import { KeyValuePair } from '@/types/data';
 import { FolderInterface, FolderType } from '@/types/folder';
 import { OpenAIModelID, OpenAIModels, fallbackModelID } from '@/types/openai';
-import { Plugin } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
 
 import { Chat } from '@/components/Chat/Chat';
@@ -110,21 +108,6 @@ const Home = ({
     });
 
     saveConversation(conversation);
-  };
-
-  const handleSelectPlugin = (selectedPlugin: Plugin | null) => {
-    dispatch({
-      field: 'selectedPlugin',
-      value: selectedPlugin,
-    });
-    if (selectedPlugin && selectedPlugin.id === 'edgar') {
-      dispatch({
-        field: 'edgarPluginKeys',
-        value: selectedPlugin.requiredKeys,
-      });
-    }
-
-    savePlugin(selectedPlugin);
   };
 
   // FOLDER OPERATIONS  --------------------------------------------
@@ -294,20 +277,6 @@ const Home = ({
       dispatch({ field: 'pluginKeys', value: pluginKeys });
     }
 
-    const plugin = localStorage.getItem('selectedPlugin');
-    if (plugin) {
-      const selectedPlugin: Plugin = JSON.parse(plugin);
-      dispatch({ field: 'selectedPlugin', value: selectedPlugin });
-    }
-    const edgarKeys = localStorage.getItem('edgarPluginKeys');
-    if (edgarKeys) {
-      const edgarPluginKeys: KeyValuePair[] = JSON.parse(edgarKeys);
-      dispatch({
-        field: 'edgarPluginKeys',
-        value: edgarPluginKeys,
-      });
-    }
-
     if (window.innerWidth < 640) {
       dispatch({ field: 'showChatbar', value: false });
       dispatch({ field: 'showPromptbar', value: false });
@@ -382,7 +351,6 @@ const Home = ({
     <HomeContext.Provider
       value={{
         ...contextValue,
-        handleSelectPlugin,
         handleNewConversation,
         handleCreateFolder,
         handleDeleteFolder,
@@ -392,11 +360,8 @@ const Home = ({
       }}
     >
       <Head>
-        <title>OmniChat</title>
-        <meta
-          name="description"
-          content="Your Passport to Information Exploration."
-        />
+        <title>Chatbot UI</title>
+        <meta name="description" content="ChatGPT but better." />
         <meta
           name="viewport"
           content="height=device-height ,width=device-width, initial-scale=1, user-scalable=no"

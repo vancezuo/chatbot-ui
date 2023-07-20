@@ -93,7 +93,7 @@ const Promptbar = () => {
 
       handleUpdatePrompt(updatedPrompt);
 
-      e.target.style.background = '';
+      e.target.style.background = 'none';
     }
   };
 
