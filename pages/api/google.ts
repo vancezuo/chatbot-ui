@@ -41,7 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<any>) => {
       sources.map(async (source) => {
         try {
           const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Request timed out')), 30000),
+            setTimeout(() => reject(new Error('Request timed out')), 300000),
           );
 
           const res = (await Promise.race([
