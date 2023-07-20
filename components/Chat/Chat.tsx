@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'next-i18next';
 
 import { getEndpoint } from '@/utils/app/api';
+import { RETRIEVAL_STREAM_PLUGINS } from '@/utils/app/const';
 import {
   saveConversation,
   saveConversations,
@@ -21,18 +22,23 @@ import {
 import { throttle } from '@/utils/data/throttle';
 
 import { ChatBody, Conversation, Message } from '@/types/chat';
-import { Plugin } from '@/types/plugin';
+import { KeyValuePair } from '@/types/data';
+import { EdgarParams } from '@/types/edgar';
+import { Plugin, PluginID } from '@/types/plugin';
 
 import HomeContext from '@/pages/api/home/home.context';
 
 import Spinner from '../Spinner';
 import { ChatInput } from './ChatInput';
 import { ChatLoader } from './ChatLoader';
+import { ChatMessage } from './ChatMessage';
 import { ErrorMessageDiv } from './ErrorMessageDiv';
+import { MemoizedChatMessage } from './MemoizedChatMessage';
 import { ModelSelect } from './ModelSelect';
 import { SystemPrompt } from './SystemPrompt';
 import { TemperatureSlider } from './Temperature';
-import { MemoizedChatMessage } from './MemoizedChatMessage';
+
+import { p } from 'vitest/dist/types-fafda418';
 
 interface Props {
   stopConversationRef: MutableRefObject<boolean>;
@@ -104,6 +110,15 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         let body;
         if (!plugin) {
           body = JSON.stringify(chatBody);
+        } else if (plugin.id === PluginID.EDGAR) {
+          const edgarKeys = plugin.requiredKeys as KeyValuePair[];
+          body = JSON.stringify({
+            ...chatBody,
+            edgarParams: edgarKeys.reduce((acc, key) => {
+              acc[key.key] = key.value;
+              return acc;
+            }, {} as EdgarParams),
+          });
         } else {
           body = JSON.stringify({
             ...chatBody,
@@ -136,7 +151,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           homeDispatch({ field: 'messageIsStreaming', value: false });
           return;
         }
-        if (!plugin) {
+        if (!plugin || RETRIEVAL_STREAM_PLUGINS.includes(plugin.id)) {
           if (updatedConversation.messages.length === 1) {
             const { content } = message;
             const customName =
@@ -224,7 +239,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           };
           homeDispatch({
             field: 'selectedConversation',
-            value: updateConversation,
+            value: updatedConversation,
           });
           saveConversation(updatedConversation);
           const updatedConversations: Conversation[] = conversations.map(
@@ -284,7 +299,15 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
     });
   };
 
+  const handleScrollUp = () => {
+    chatContainerRef.current?.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   const handleSettings = () => {
+    handleScrollUp();
     setShowSettings(!showSettings);
   };
 
@@ -398,15 +421,26 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           >
             {selectedConversation?.messages.length === 0 ? (
               <>
-                <div className="mx-auto flex flex-col space-y-5 md:space-y-10 px-3 pt-5 md:pt-12 sm:max-w-[600px]">
+                <div className="mx-auto flex flex-col space-y-3 md:space-y-6 px-3 pt-5 md:pt-12 sm:max-w-[600px]">
                   <div className="text-center text-3xl font-semibold text-gray-800 dark:text-gray-100">
                     {models.length === 0 ? (
                       <div>
                         <Spinner size="16px" className="mx-auto" />
                       </div>
                     ) : (
-                      'Chatbot UI'
+                      'OmniChat'
                     )}
+                  </div>
+
+                  <div className="px-4 text-center text-[12px] text-black/50 dark:text-white/50 md:px-6">
+                    <p>
+                      Powered by open-source Chatbot UI, OmniChat appreciates
+                      its creators. Explore on{' '}
+                      <a href="https://github.com/mckaywrigley/chatbot-ui">
+                        <u>GitHub</u>
+                      </a>
+                      .
+                    </p>
                   </div>
 
                   {models.length > 0 && (
@@ -464,16 +498,17 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
                 )}
 
                 {selectedConversation?.messages.map((message, index) => (
-                  <MemoizedChatMessage
+                  <ChatMessage
                     key={index}
                     message={message}
                     messageIndex={index}
-                    onEdit={(editedMessage) => {
+                    onEdit={(editedMessage, plugin) => {
                       setCurrentMessage(editedMessage);
                       // discard edited message and the ones that come after then resend
                       handleSend(
                         editedMessage,
                         selectedConversation?.messages.length - index,
+                        plugin,
                       );
                     }}
                   />
@@ -497,9 +532,9 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
               handleSend(message, 0, plugin);
             }}
             onScrollDownClick={handleScrollDown}
-            onRegenerate={() => {
+            onRegenerate={(plugin) => {
               if (currentMessage) {
-                handleSend(currentMessage, 2, null);
+                handleSend(currentMessage, 2, plugin);
               }
             }}
             showScrollDownButton={showScrollDownButton}
